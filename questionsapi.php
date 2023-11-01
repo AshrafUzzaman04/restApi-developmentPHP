@@ -10,10 +10,12 @@ switch ($request) {
 		createmethod();
 		break;
 	case 'PUT':
-		updatemethod();
+		$data = json_decode(file_get_contents("php://input"), true);
+		updatemethod($data);
 		break;
 	case 'DELETE':
-		deletemethod();
+		$data = json_decode(file_get_contents("php://input"), true);
+		deletemethod($data);
 		break;
 	default:
 		echo  "REQUEST_METHOD not supported";
@@ -61,13 +63,9 @@ function createmethod()
 
 
 //__data updated__//
-function updatemethod()
+function updatemethod($data)
 {
 	$conn = mysqli_connect("localhost", "root", "", "quizapp");
-
-	// Use php://input to retrieve the PUT request data
-	$put_data = file_get_contents("php://input");
-	$data = json_decode($put_data, true);
 
 	if ($data && isset($data["id"], $data["question"], $data["option1"], $data["option2"], $data["option3"], $data["option4"], $data["correct_option"])) {
 		$id = $data["id"];
@@ -93,14 +91,13 @@ function updatemethod()
 
 
 //__data delete__//
-function deletemethod()
+function deletemethod($data)
 {
 	$conn = mysqli_connect("localhost", "root", "", "quizapp");
 
-	// $data = $_REQUEST;
-	// $id = $data["id"];
+	$id = $data["id"];
 
-	$stmt = $conn->query("DELETE FROM `tech` WHERE `id` = 1");
+	$stmt = $conn->query("DELETE FROM `tech` WHERE `id` = '$id'");
 
 	if ($stmt) {
 		echo "deleted successfully";
